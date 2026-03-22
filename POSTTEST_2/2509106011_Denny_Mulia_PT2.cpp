@@ -1,3 +1,6 @@
+// Nama : Denny Mulia
+// NIM : 2509106011
+
 #include <iostream>
 #include <string>
 
@@ -26,9 +29,9 @@ void tampilData(Hewan* arr, int n) {
     for (int i = 0; i < n; i++) {
         // Akses data menggunakan pointer aritmatika
         cout << "ID " << (arr + i)->id 
-             << " | Nama " << (arr + i)->nama 
-             << " | Jenis " << (arr + i)->jenis 
-             << " | Harga Rp" << (arr + i)->harga << endl;
+            << " | Nama " << (arr + i)->nama 
+            << " | Jenis " << (arr + i)->jenis 
+            << " | Harga Rp" << (arr + i)->harga << endl;
     }
 }
 
