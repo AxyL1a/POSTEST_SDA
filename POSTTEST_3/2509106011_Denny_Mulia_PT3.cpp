@@ -1,4 +1,4 @@
-// nama denny mulia
+// nama Denny Mulia
 // nim 2509106011
 
 #include <iostream>
