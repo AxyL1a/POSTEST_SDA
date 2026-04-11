@@ -15,28 +15,29 @@ struct Hewan {
 
 const int MAKS = 100;
 
-// Queue Antrian Pet
+// Queue Antrian Pet berbasis Array
 struct AntrianPet {
     Hewan data[MAKS];
     int depan = -1;
     int belakang = -1;
 };
 
-// Stack Catatan Medis
+// Stack Catatan Medis berbasis Array
 struct CatatanMedis {
     Hewan data[MAKS];
     int atas = -1;
 };
 
+// Fungsi pengecekan underflow dan overflow
 bool antrianKosong(AntrianPet* q) { return q->depan == -1; }
 bool antrianPenuh(AntrianPet* q) { return q->belakang == MAKS - 1; }
 bool catatanKosong(CatatanMedis* s) { return s->atas == -1; }
 bool catatanPenuh(CatatanMedis* s) { return s->atas == MAKS - 1; }
 
-// Queue Hewan mendaftar masuk menggunakan enqueue
+// Enqueue dengan Parameter struct* dan Penanganan Overflow
 void tambahAntrian(AntrianPet* q, Hewan h) {
     if (antrianPenuh(q)) {
-        cout << "Antrian Penuh" << endl;
+        cout << "Antrian Penuh (Overflow)" << endl;
         return;
     }
     if (antrianKosong(q)) q->depan = 0;
@@ -45,7 +46,7 @@ void tambahAntrian(AntrianPet* q, Hewan h) {
     cout << h.nama << " Berhasil masuk antrian" << endl;
 }
 
-// Dequeue Panggil hewan terdepan dari antrian
+// Dequeue dengan Parameter struct* dan penanganan underflow
 Hewan panggilAntrian(AntrianPet* q) {
     Hewan temp = *(q->data + q->depan);
     if (q->depan == q->belakang) {
@@ -56,23 +57,27 @@ Hewan panggilAntrian(AntrianPet* q) {
     return temp;
 }
 
-// Stack Setiap hewan selesai diperiksa masuk ke catatan menggunakan push
+// Push Catatan medis
 void tambahCatatan(CatatanMedis* s, Hewan h) {
-    if (catatanPenuh(s)) return;
+    if (catatanPenuh(s)) {
+        cout << "Catatan Penuh (Overflow)" << endl;
+        return;
+    }
     s->atas++;
     *(s->data + s->atas) = h;
 }
 
-// Pop Hapus catatan medis terakhir menggunakan pop
+// Pop Catatan medis dengan penanganan underflow
 void hapusCatatan(CatatanMedis* s) {
     if (catatanKosong(s)) {
-        cout << "Catatan Medis Kosong tidak ada yang bisa dihapus" << endl;
+        cout << "Catatan Medis Kosong (Underflow)" << endl;
         return;
     }
     cout << "Catatan medis untuk " << (s->data + s->atas)->nama << " Dibatalkan" << endl;
     s->atas--;
 }
 
+// Swap menggunakan Dereferensi Pointer
 void tukar(Hewan *a, Hewan *b) {
     Hewan temp = *a;
     *a = *b;
@@ -81,7 +86,7 @@ void tukar(Hewan *a, Hewan *b) {
 
 void tampilData(Hewan* arr, int n) {
     if (n == 0) {
-        cout << "Data Masih Kosong" << endl;
+        cout << "Data Utama Kosong" << endl;
         return;
     }
     cout << "\n=== Daftar Hewan Pawcare Petshop ===" << endl;
@@ -93,12 +98,12 @@ void tampilData(Hewan* arr, int n) {
     }
 }
 
-// Sorting Bubble Sort
+// Sorting Bubble Sort (Dereferensi Pointer)
 void urutNama(Hewan* arr, int n) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             if ((arr + j)->nama > (arr + (j + 1))->nama) {
-                tukar(&(arr[j]), &(arr[j + 1])); 
+                tukar((arr + j), (arr + j + 1)); 
             }
         }
     }
@@ -114,7 +119,7 @@ void urutHarga(Hewan* arr, int n) {
                 idxMin = j;
             }
         }
-        tukar(&arr[idxMin], &arr[i]);
+        tukar((arr + idxMin), (arr + i));
     }
     cout << "Data Berhasil Diurutkan" << endl;
 }
@@ -133,26 +138,21 @@ void cariNama(Hewan* arr, int n, string target) {
 }
 
 void cariID(Hewan* arr, int n, int x) {
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if ((arr + j)->id > (arr + (j + 1))->id) tukar(&arr[j], &arr[j + 1]);
-        }
-    }
-    int fibM2 = 0; int fibM1 = 1; int fibM = fibM2 + fibM1; 
+    int fibM2 = 0, fibM1 = 1, fibM = fibM2 + fibM1; 
     while (fibM < n) { fibM2 = fibM1; fibM1 = fibM; fibM = fibM2 + fibM1; }
     int offset = -1;
     while (fibM > 1) {
         int i = min(offset + fibM2, n - 1);
-        if (arr[i].id < x) {
+        if ((arr + i)->id < x) {
             fibM = fibM1; fibM1 = fibM2; fibM2 = fibM - fibM1; offset = i;
-        } else if (arr[i].id > x) {
+        } else if ((arr + i)->id > x) {
             fibM = fibM2; fibM1 = fibM1 - fibM2; fibM2 = fibM - fibM1;
         } else {
-            cout << "ID " << x << " Ditemukan yaitu " << arr[i].nama << endl;
+            cout << "ID " << x << " Ditemukan yaitu " << (arr + i)->nama << endl;
             return;
         }
     }
-    if (fibM1 && arr[offset + 1].id == x) cout << "ID " << x << " Ditemukan yaitu " << arr[offset+1].nama << endl;
+    if (fibM1 && (arr + offset + 1)->id == x) cout << "ID " << x << " Ditemukan yaitu " << (arr + offset + 1)->nama << endl;
     else cout << "ID Tidak Ditemukan" << endl;
 }
 
@@ -182,8 +182,8 @@ int main() {
         cout << "8 Panggil Pet (Dequeue)" << endl;
         cout << "9 Hapus Catatan Medis Terakhir (Pop)" << endl;
         cout << "10 Lihat Data Teratas (Peek)" << endl;
-        cout << "11 Tampil Semua Antrian" << endl;
-        cout << "12 Tampil Semua Catatan Medis" << endl;
+        cout << "11 Tampil Semua Antrian (Pointer Aritmatika)" << endl;
+        cout << "12 Tampil Semua Catatan Medis (Pointer Aritmatika)" << endl;
         cout << "0 Keluar" << endl;
         cout << "Pilihan "; cin >> pilihan;
 
@@ -220,7 +220,7 @@ int main() {
                 Hewan h = panggilAntrian(&qPet);
                 cout << "Memanggil Pet " << h.nama << " dengan ID " << h.id << endl;
                 tambahCatatan(&sCatatan, h); 
-            } else cout << "Antrian Kosong" << endl;
+            } else cout << "Antrian Kosong (Underflow)" << endl;
         } else if (pilihan == 9) {
             hapusCatatan(&sCatatan);
         } else if (pilihan == 10) {
